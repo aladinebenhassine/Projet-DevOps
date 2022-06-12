@@ -1,0 +1,72 @@
+pipeline {
+    environment {
+        registry = "aladinebha/timesheet"
+        registryCredential = 'dockerHub'
+        dockerImage = ''
+    }
+    agent any
+    stages {
+        stage("Build") {
+            steps {
+                sh "ls .mvn "
+                sh "chmod +x mvnw"
+                sh "./mvnw clean"
+            }
+        }
+        stage("Unit tests") {
+            steps {
+                sh "./mvnw -Dspring.datasource.url='jdbc:mysql://mysql:3306/timesheet?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC' test"
+            }
+        }
+        stage("Static tests") {
+            steps {
+                sh ''' ./mvnw sonar:sonar \
+                        -Dsonar.projectKey=timesheet \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=a8dc2860592ae40fc26bfded8952349038bb520d
+                        '''
+            }
+        }
+        stage("clean et packaging") {
+            steps {
+                sh "./mvnw clean package -DskipTests"
+            }
+        }
+        stage("Deploy to nexus") {
+            steps {
+                sh ''' ./mvnw deploy:deploy-file \
+                             -DgroupId=tn.esprit \
+                             -DartifactId=Timesheet \
+                             -Dversion=1.0 \
+                             -DgeneratePom=true \
+                             -Dpackaging=war \
+                             -DrepositoryId=deploymentRepo \
+                             -Durl=http://nexus:8081/repository/maven-releases/ \
+                             -Dfile=target/Timesheet-1.0.war
+                    '''
+            }
+        }
+        stage('Building our image') {
+            steps {
+                script {
+                    sh "docker version"
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Deploy our image') {
+                steps {
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Cleaning up') {
+            steps {
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
+        }
+    }
+}
