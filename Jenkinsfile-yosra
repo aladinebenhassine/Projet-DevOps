@@ -18,15 +18,6 @@ pipeline {
                 sh "./mvnw -Dspring.datasource.url='jdbc:mysql://mysql:3306/timesheet?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC' test"
             }
         }
-        stage("Static tests") {
-            steps {
-                sh ''' ./mvnw sonar:sonar \
-                        -Dsonar.projectKey=timesheet \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=a8dc2860592ae40fc26bfded8952349038bb520d
-                        '''
-            }
-        }
         stage("clean et packaging") {
             steps {
                 sh "./mvnw clean package -DskipTests"
