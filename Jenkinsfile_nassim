@@ -21,9 +21,9 @@ pipeline {
         stage("Static tests") {
             steps {
                 sh ''' ./mvnw sonar:sonar \
-                        -Dsonar.projectKey=timesheet \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=a8dc2860592ae40fc26bfded8952349038bb520d
+                         -Dsonar.projectKey=TimeSheet \
+                         -Dsonar.host.url=http://sonarqube:9000 \
+                         -Dsonar.login=1fbcb82755d091f6bb515cc07ce72eec08b1caa6
                         '''
             }
         }
