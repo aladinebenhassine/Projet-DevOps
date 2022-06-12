@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        registry = "nmassin26/timesheet"
+        registry = "mnassin26/timesheet"
         registryCredential = 'dockerHub'
         dockerImage = ''
     }
