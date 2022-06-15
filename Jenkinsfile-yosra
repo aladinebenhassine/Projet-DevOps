@@ -54,7 +54,7 @@ pipeline {
         }
         stage('Run Container') {
             steps {
-                sh "docker run -d -e SPRING_DATASOURCE_URL='jdbc:mysql://mysql:3306/timesheet?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC' -p 8082:8082 $registry:$BUILD_NUMBER" --network="devops_default"
+                sh "docker run -d -e SPRING_DATASOURCE_URL='jdbc:mysql://mysql:3306/timesheet?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC' --network='devops_default' -p 8082:8082 $registry:$BUILD_NUMBER" 
             }
         }
     }
