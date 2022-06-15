@@ -60,4 +60,9 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            emailext body: 'Notif : another build is runned in jenkins ', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins'
+        }
+    }
 }
